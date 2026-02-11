@@ -56,7 +56,17 @@ void LinkedList<T>::clear() {
 
 template <typename T>
 void LinkedList<T>::copy(const LinkedList<T>& copyObj) {
-    // TODO
+    head = nullptr;
+    Node* srcNode = copyObj.head;
+    Node** link = &head;  // pointer to the mem address of head, *link actually == head, below *link will == ->next
+
+    while (srcNode) {  
+        *link = new Node(srcNode->value, nullptr);   // current "next" pointer (starting at head) is set to new node, via deref
+        link = &((*link)->next);  // set pointerpointer to point the address of the newNode's next pointer
+
+        srcNode = srcNode->next;
+        ++this->length;
+    }
 }
 
 template <typename T>
@@ -81,7 +91,21 @@ int LinkedList<T>::getLength() const {
 
 template <typename T>
 void LinkedList<T>::insert(int position, const T& elem) {
-    // TODO
+    // technically length check not needed, loop will just put at end. Unless we want to constrain user/driver
+    if (position < 0 || position > this->length) throw string("Invalid position for inserting element");
+
+    Node** link = &head;  // set pointer to the memory address of head pointer, not the pointer itself
+
+    while (position > 0 && *link != nullptr) {  // neat...the loop just needs to run the correct number of times to find the position
+        link = &((*link)->next);        // each loop, link is now pointing to address of the ->next pointer, deref for next, then return &
+        --position;
+    }
+
+    Node* newNode = new Node(elem,*link);  // new node, pass it the pointer to next node (via deref **)
+
+    *link = newNode;    // set current node's next pointer, to newNode (via deref **)
+
+     ++this->length;
 }
 
 template <typename T>
@@ -91,7 +115,28 @@ bool LinkedList<T>::isEmpty() const {
 
 template <typename T>
 void LinkedList<T>::remove(int position) {
-    // TODO
+    if (this->isEmpty()) {
+        cout << "List is already empty" << endl;
+        return;
+    }
+    if (position < 0 || position >= this->length) throw string("Invalid position passed for removing element");
+
+    if (position == 0) {
+        Node* removeMe = head;
+        head = head->next;
+        delete removeMe;
+    }
+    else {
+        Node* removeMe = head;
+        Node* prev = head;
+        for (int i = 0; i < position-1; ++i) prev = prev->next;
+
+        removeMe = prev->next;
+        prev->next = removeMe->next;
+        delete removeMe;    
+        }
+
+    --this->length;
 }
 
 template <typename T>

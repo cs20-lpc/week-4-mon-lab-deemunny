@@ -3,6 +3,8 @@
 
 #include "List.hpp"
 #include <iostream>
+#include <stdexcept>
+
 using namespace std;
 
 template <typename T>
